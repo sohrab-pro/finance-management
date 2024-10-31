@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -6,21 +6,39 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
-import {addCustomer} from './storage';
+import {addCustomer, getUser} from './storage';
 
-const AddCustomer = ({nativation, route}) => {
+const AddCustomer = ({navigation, route}) => {
   const [name, setName] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
+  const [userId, setUserId] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const fetchUser = async () => {
+    const user = await getUser();
+    setUserId(user.id);
+    setUserEmail(user.email);
+  };
 
   const handleContinue = async () => {
+    setLoading(true);
     if (!name) {
       Alert.alert('Validation', 'Name is required!');
       return;
     }
-    console.log(name, mobileNumber);
-    await addCustomer(name, mobileNumber);
+    if (userId && userEmail) {
+      await addCustomer(name, mobileNumber, userId, userEmail);
+      setLoading(false);
+      navigation.navigate('HomeTab');
+    }
   };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -42,8 +60,15 @@ const AddCustomer = ({nativation, route}) => {
         onChangeText={setMobileNumber}
       />
 
-      <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
-        <Text style={styles.continueButtonText}>CONTINUE</Text>
+      <TouchableOpacity
+        style={styles.continueButton}
+        onPress={handleContinue}
+        disabled={loading}>
+        {loading ? (
+          <ActivityIndicator size="small" color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>CONTINUE</Text>
+        )}
       </TouchableOpacity>
     </View>
   );
@@ -65,6 +90,7 @@ const styles = StyleSheet.create({
     height: 50,
     borderWidth: 1,
     borderColor: '#ddd',
+    color: 'black',
     borderRadius: 8,
     padding: 10,
     fontSize: 16,

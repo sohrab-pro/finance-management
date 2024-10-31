@@ -1,13 +1,16 @@
 import {db, collection, addDoc, getDocs} from '../firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const addCustomer = async (name, phone) => {
+export const addCustomer = async (name, phone, id, email) => {
   try {
     const docRef = await addDoc(collection(db, 'customers'), {
       name: name,
       phone: phone,
+      id: id,
+      email: email,
+      createdAt: new Date(),
     });
-    console.log(docRef);
+    console.log(docRef.id);
   } catch (error) {
     console.log(error);
   }

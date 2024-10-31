@@ -1,7 +1,7 @@
 import React, {useState, useCallback, useEffect} from 'react';
 import {View, Text, FlatList, TouchableOpacity, StyleSheet} from 'react-native';
 import BalanceCard from './BalanceCard';
-import {getUser} from './storage';
+import {getUser, getCustomers} from './storage';
 
 const Home = ({navigation}) => {
   const [customers, setCustomers] = useState([]);
@@ -10,9 +10,13 @@ const Home = ({navigation}) => {
 
   const fetchUser = async () => {
     const user = await getUser();
-    console.log(user);
     setUserId(user.id);
     setUserEmail(user.email);
+  };
+
+  const fetchCustomers = async () => {
+    const customers = await getCustomers(userId);
+    setCustomers(customers);
   };
 
   useEffect(() => {
