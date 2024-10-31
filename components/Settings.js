@@ -1,12 +1,13 @@
+import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 
-const Home = ({navigation}) => {
+const Settings = ({navigation}) => {
   const goBack = () => {
-    navigation.navigate('Settings');
+    navigation.navigate('HomeTab');
   };
   return (
     <View>
-      <Text>Home</Text>
+      <Text>Settings</Text>
       <TouchableOpacity onPress={goBack}>
         <Text>Click me</Text>
       </TouchableOpacity>
@@ -14,6 +15,4 @@ const Home = ({navigation}) => {
   );
 };
 
-const styles = StyleSheet.create({});
-
-export default Home;
+export default Settings;
