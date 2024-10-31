@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Home from './components/Home';
 import Settings from './components/Settings';
 import Login from './components/Login';
+import Signup from './components/Signup';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -15,6 +16,11 @@ const AuthStack = ({setIsLoggedIn}) => (
     <Stack.Screen name="Login" options={{headerShown: false, title: 'Login'}}>
       {props => <Login {...props} setIsLoggedIn={setIsLoggedIn} />}
     </Stack.Screen>
+    <Stack.Screen
+      name="Signup"
+      component={Signup}
+      options={{headerShown: false, title: 'Signup'}}
+    />
   </Stack.Navigator>
 );
 

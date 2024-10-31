@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -30,23 +29,15 @@ const Login = ({navigation, setIsLoggedIn}) => {
     setLoading(true);
     setError('');
     try {
-      const userCredential = await signInWithEmailAndPassword(
+      const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
         password,
       );
-      console.log(userCredential);
-      setLoading(false);
+      const user = userCredential.user;
+      console.log(user);
     } catch (error) {
-      setLoading(false);
-      console.error(error.code);
-      if (error.code === 'auth/invalid-credential') {
-        console.log('Invalid credentials');
-        setError('Invalid credentials');
-      } else if (error.code == 'auth/invalid-email') {
-        console.log('Invalid email');
-        setError('Invalid email');
-      }
+      console.error(error);
     }
   };
 
@@ -59,7 +50,7 @@ const Login = ({navigation, setIsLoggedIn}) => {
       <View style={styles.card}>
         <View style={styles.logoContainer}>
           <Icon name="message-text" size={60} color="#FF6347" />
-          <Text style={styles.title}>Sign SMS</Text>
+          <Text style={styles.title}>Sign Up SMS</Text>
         </View>
         {error ? <Text style={styles.error}>{error}</Text> : null}
         <View style={styles.inputContainer}>
@@ -76,7 +67,6 @@ const Login = ({navigation, setIsLoggedIn}) => {
             onChangeText={setEmail}
             placeholder="Email"
             placeholderTextColor="#a0a0a0"
-            keyboardType="email-address"
           />
         </View>
         <View style={styles.inputContainer}>
@@ -116,8 +106,8 @@ const Login = ({navigation, setIsLoggedIn}) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('Signup')}>
-          <Text style={styles.buttonText}>Sing Up</Text>
+          onPress={() => navigation.navigate('Login')}>
+          <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

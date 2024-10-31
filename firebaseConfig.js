@@ -1,5 +1,6 @@
 import {initializeApp} from 'firebase/app';
 import {getFirestore, collection, addDoc, getDocs} from 'firebase/firestore';
+import {initializeAuth, indexedDBLocalPersistence} from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyCPl63fEWhhD8y_z3Iy-p2zgHWNTVFR_n0',
@@ -11,7 +12,9 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-
 const db = getFirestore(app);
+const auth = initializeAuth(app, {
+  persistence: indexedDBLocalPersistence,
+});
 
-export {app, db, getFirestore, collection, addDoc, getDocs};
+export {app, db, auth, getFirestore, collection, addDoc, getDocs};
