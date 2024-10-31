@@ -1,16 +1,4 @@
-// First install bottom tabs:
-// npm install @react-navigation/bottom-tabs
-
 import React from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -18,6 +6,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Home from './components/Home';
 import Profile from './components/Profile';
 import Settings from './components/Settings';
+import Login from './components/Login';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -45,6 +34,7 @@ function TabNavigator() {
         component={Home}
         options={{
           title: 'Home',
+          headerShown: false,
         }}
       />
       <Tab.Screen
@@ -52,7 +42,6 @@ function TabNavigator() {
         component={Settings}
         options={{
           title: 'Settings',
-          // Add tab bar icon here if needed
         }}
       />
     </Tab.Navigator>
@@ -67,12 +56,7 @@ function App() {
         <Stack.Screen
           name="MainTabs"
           component={TabNavigator}
-          options={{headerShown: false}} // Hide header for tabs
-        />
-        <Stack.Screen
-          name="Profile"
-          component={Profile}
-          options={{title: 'Profile'}}
+          options={{headerShown: false}}
         />
       </Stack.Navigator>
     </NavigationContainer>
