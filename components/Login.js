@@ -1,13 +1,171 @@
-import {View, Text, StyleSheet} from 'react-native';
+import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const Login = () => {
+const Login = ({navigation, setIsLoggedIn}) => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleLogin = async () => {
+    setLoading(true);
+    setError('');
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
-    <View>
-      <Text>Login</Text>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.card}>
+        <View style={styles.logoContainer}>
+          <Icon name="message-text" size={60} color="#FF6347" />
+          <Text style={styles.title}>Sign SMS</Text>
+        </View>
+        {error ? <Text style={styles.error}>{error}</Text> : null}
+        <View style={styles.inputContainer}>
+          <Icon
+            name="account"
+            size={24}
+            color="#FF6347"
+            style={styles.inputIcon}
+          />
+          <TextInput
+            style={styles.input}
+            value={username}
+            autoCapitalize="none"
+            onChangeText={setUsername}
+            placeholder="Username"
+            placeholderTextColor="#a0a0a0"
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Icon
+            name="lock"
+            size={24}
+            color="#FF6347"
+            style={styles.inputIcon}
+          />
+          <TextInput
+            style={styles.input}
+            secureTextEntry={!showPassword}
+            value={password}
+            onChangeText={setPassword}
+            placeholder="Password"
+            placeholderTextColor="#a0a0a0"
+          />
+          <TouchableOpacity
+            onPress={togglePasswordVisibility}
+            style={styles.eyeButton}>
+            <Icon
+              name={showPassword ? 'eye-off' : 'eye'}
+              size={24}
+              color="#FF6347"
+            />
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleLogin}
+          disabled={loading}>
+          {loading ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>Login</Text>
+          )}
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  gradient: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  keyboardAvoidingView: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  card: {
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 30,
+    marginTop: 100,
+    marginHorizontal: 20,
+    maxWidth: 400,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#FF6347',
+    marginTop: 10,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f9f9f9',
+    borderRadius: 10,
+    marginBottom: 15,
+    paddingHorizontal: 10,
+  },
+  inputIcon: {
+    marginRight: 10,
+  },
+  input: {
+    flex: 1,
+    paddingVertical: 12,
+    fontSize: 16,
+    color: '#333',
+  },
+  eyeButton: {
+    padding: 10,
+  },
+  button: {
+    backgroundColor: '#FF6347',
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  error: {
+    color: '#FF3B30',
+    marginBottom: 15,
+    textAlign: 'center',
+    fontSize: 14,
+  },
+});
 
 export default Login;
