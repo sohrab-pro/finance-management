@@ -1,7 +1,8 @@
 import React, {useState, useCallback, useEffect} from 'react';
+import {useFocusEffect} from '@react-navigation/native';
 import {View, Text, FlatList, TouchableOpacity, StyleSheet} from 'react-native';
 import BalanceCard from './BalanceCard';
-import {getUser, getCustomers} from './storage';
+import {getUser, getCustomers, formatFirebaseTimestamp} from './storage';
 
 const Home = ({navigation}) => {
   const [customers, setCustomers] = useState([]);
@@ -19,47 +20,56 @@ const Home = ({navigation}) => {
     setCustomers(customers);
   };
 
-  useEffect(() => {
-    fetchUser();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchUser();
+      fetchCustomers();
+    }, []),
+  );
 
-  const renderItem = ({item}) => (
-    <TouchableOpacity
-      onPress={() => navigation.navigate('CustomerInfo', {customer: item})}>
-      <View style={styles.itemContainer}>
-        <View style={styles.customerInfo}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{item.name.charAt(0)}</Text>
+  const renderItem = useCallback(({item}) => {
+    const formattedDateTime = formatFirebaseTimestamp(item.createdAt);
+    return (
+      <TouchableOpacity
+        onPress={() => navigation.navigate('CustomerInfo', {customer: item})}>
+        <View style={styles.itemContainer}>
+          <View style={styles.customerInfo}>
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>{item.name[0]}</Text>
+            </View>
+            <View style={styles.details}>
+              <Text style={styles.name}>{item.name}</Text>
+              <Text
+                style={
+                  styles.dateTime
+                }>{`${formattedDateTime.date} • ${formattedDateTime.time}`}</Text>
+            </View>
           </View>
-          <View style={styles.details}>
-            <Text style={styles.name}>{item.name}</Text>
-            <Text style={styles.dateTime}>{`${item.date} • ${item.time}`}</Text>
-          </View>
-        </View>
-        <View style={styles.amountContainer}>
-          <Text
-            style={
-              item.type === 'send' ? styles.sendAmount : styles.requestAmount
-            }>
-            Rs {item.amount}
-          </Text>
-          <TouchableOpacity
-            style={
-              item.type === 'send' ? styles.sendButton : styles.requestButton
-            }>
+          <View style={styles.amountContainer}>
             <Text
               style={
-                item.type === 'send'
-                  ? styles.sendButtonText
-                  : styles.requestButtonText
+                item.type === 'send' ? styles.sendAmount : styles.requestAmount
               }>
-              {item.type === 'send' ? 'Send' : 'Request'}
+              Rs {item.amount}
             </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={
+                item.type === 'send' ? styles.sendButton : styles.requestButton
+              }>
+              <Text
+                style={
+                  item.type === 'send'
+                    ? styles.sendButtonText
+                    : styles.requestButtonText
+                }>
+                {item.type === 'send' ? 'Send' : 'Request'}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+    );
+  });
 
   return (
     <View style={styles.container}>
@@ -69,6 +79,9 @@ const Home = ({navigation}) => {
         renderItem={renderItem}
         keyExtractor={item => item.id}
         contentContainerStyle={{paddingBottom: 60}}
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        windowSize={5}
       />
       <TouchableOpacity
         onPress={() => navigation.navigate('AddCustomer')}
