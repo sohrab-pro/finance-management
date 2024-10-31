@@ -11,13 +11,9 @@ import {
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-} from 'firebase/auth';
+import {signInWithEmailAndPassword} from 'firebase/auth';
 import {auth} from '../firebaseConfig';
+import {saveUser} from './storage';
 
 const Login = ({navigation, setIsLoggedIn}) => {
   const [email, setEmail] = useState('');
@@ -35,11 +31,16 @@ const Login = ({navigation, setIsLoggedIn}) => {
         email,
         password,
       );
-      console.log(userCredential);
+      const data = {
+        id: userCredential.user.uid,
+        email: userCredential.user.email,
+      };
+      await saveUser(data);
+      setIsLoggedIn(true);
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      console.error(error.code);
+      console.log(error, 'code');
       if (error.code === 'auth/invalid-credential') {
         console.log('Invalid credentials');
         setError('Invalid credentials');
@@ -56,70 +57,72 @@ const Login = ({navigation, setIsLoggedIn}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.card}>
-        <View style={styles.logoContainer}>
-          <Icon name="message-text" size={60} color="#FF6347" />
-          <Text style={styles.title}>Sign SMS</Text>
-        </View>
-        {error ? <Text style={styles.error}>{error}</Text> : null}
-        <View style={styles.inputContainer}>
-          <Icon
-            name="account"
-            size={24}
-            color="#FF6347"
-            style={styles.inputIcon}
-          />
-          <TextInput
-            style={styles.input}
-            value={email}
-            autoCapitalize="none"
-            onChangeText={setEmail}
-            placeholder="Email"
-            placeholderTextColor="#a0a0a0"
-            keyboardType="email-address"
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Icon
-            name="lock"
-            size={24}
-            color="#FF6347"
-            style={styles.inputIcon}
-          />
-          <TextInput
-            style={styles.input}
-            secureTextEntry={!showPassword}
-            value={password}
-            onChangeText={setPassword}
-            placeholder="Password"
-            placeholderTextColor="#a0a0a0"
-          />
-          <TouchableOpacity
-            onPress={togglePasswordVisibility}
-            style={styles.eyeButton}>
+      <KeyboardAvoidingView>
+        <View style={styles.card}>
+          <View style={styles.logoContainer}>
+            <Icon name="message-text" size={60} color="#FF6347" />
+            <Text style={styles.title}>Sign SMS</Text>
+          </View>
+          {error ? <Text style={styles.error}>{error}</Text> : null}
+          <View style={styles.inputContainer}>
             <Icon
-              name={showPassword ? 'eye-off' : 'eye'}
+              name="account"
               size={24}
               color="#FF6347"
+              style={styles.inputIcon}
             />
+            <TextInput
+              style={styles.input}
+              value={email}
+              autoCapitalize="none"
+              onChangeText={setEmail}
+              placeholder="Email"
+              placeholderTextColor="#a0a0a0"
+              keyboardType="email-address"
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Icon
+              name="lock"
+              size={24}
+              color="#FF6347"
+              style={styles.inputIcon}
+            />
+            <TextInput
+              style={styles.input}
+              secureTextEntry={!showPassword}
+              value={password}
+              onChangeText={setPassword}
+              placeholder="Password"
+              placeholderTextColor="#a0a0a0"
+            />
+            <TouchableOpacity
+              onPress={togglePasswordVisibility}
+              style={styles.eyeButton}>
+              <Icon
+                name={showPassword ? 'eye-off' : 'eye'}
+                size={24}
+                color="#FF6347"
+              />
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleLogin}
+            disabled={loading}>
+            {loading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Login</Text>
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('Signup')}>
+            <Text style={styles.buttonText}>Sing Up</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={handleLogin}
-          disabled={loading}>
-          {loading ? (
-            <ActivityIndicator size="small" color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Login</Text>
-          )}
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('Signup')}>
-          <Text style={styles.buttonText}>Sing Up</Text>
-        </TouchableOpacity>
-      </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

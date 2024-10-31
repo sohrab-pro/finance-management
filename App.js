@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -7,6 +7,8 @@ import Home from './components/Home';
 import Settings from './components/Settings';
 import Login from './components/Login';
 import Signup from './components/Signup';
+import AddCustomer from './components/AddCustomer';
+import {getUser} from './components/storage';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -29,6 +31,11 @@ const AppStack = ({setIsLoggedIn}) => (
     <Stack.Screen name="MainTabs" options={{headerShown: false}}>
       {props => <BottomTabNavigator {...props} setIsLoggedIn={setIsLoggedIn} />}
     </Stack.Screen>
+    <Stack.Screen
+      name="AddCustomer"
+      component={AddCustomer}
+      options={{headerShown: false, title: 'Add Customer'}}
+    />
   </Stack.Navigator>
 );
 
@@ -69,6 +76,18 @@ const BottomTabNavigator = ({setIsLoggedIn}) => (
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkAuthToken = async () => {
+      try {
+        const token = await getUser();
+        setIsLoggedIn(!!token);
+      } catch (error) {
+        console.error('Error fetching auth token:', error);
+      }
+    };
+    checkAuthToken();
+  }, []);
   return (
     <NavigationContainer>
       {isLoggedIn ? (

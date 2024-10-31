@@ -1,9 +1,23 @@
-import React, {useState, useCallback, useFocusEffect} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {View, Text, FlatList, TouchableOpacity, StyleSheet} from 'react-native';
 import BalanceCard from './BalanceCard';
+import {getUser} from './storage';
 
 const Home = ({navigation}) => {
   const [customers, setCustomers] = useState([]);
+  const [userId, setUserId] = useState();
+  const [userEmail, setUserEmail] = useState();
+
+  const fetchUser = async () => {
+    const user = await getUser();
+    console.log(user);
+    setUserId(user.id);
+    setUserEmail(user.email);
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
   const renderItem = ({item}) => (
     <TouchableOpacity
@@ -53,9 +67,7 @@ const Home = ({navigation}) => {
         contentContainerStyle={{paddingBottom: 60}}
       />
       <TouchableOpacity
-        onPress={() =>
-          navigation.navigate('AddCustomer', customers, setCustomers)
-        }
+        onPress={() => navigation.navigate('AddCustomer')}
         style={styles.floatingButton}>
         <Text style={styles.floatingButtonText}>Add Customer</Text>
       </TouchableOpacity>
